@@ -33,8 +33,17 @@ class TestUtilities(unittest.TestCase):
                 chromosomes = [ "1", "19" ], prefix = "annotations",
             )
             self.assertTrue(os.path.exists(os.path.join(d, "annotations.1.annot.gz")))
-            with gzip.open(os.path.join(d, "annotations.1.annot.gz"), 'rb') as f:
-                self.assertEqual(hashlib.md5(f.read()).hexdigest(), "ce739c7cb146e19702e2108ce8cb55ed")
+            os.system("cp %s %s" % (os.path.join(d, "annotations.19.annot.gz"), "/test"))
+            with gzip.open(os.path.join(d, "annotations.1.annot.gz"), 'rt') as f:
+                f.readline()
+                self.assertEqual(hashlib.md5(
+                    f.read().replace("\t%s" % os.path.join(d, "annotations.1.annot.gz"), "").encode("utf-8")
+                ).hexdigest(), "334cf2014c299b7a246d29209c1b05b4"
+            )
             self.assertTrue(os.path.exists(os.path.join(d, "annotations.19.annot.gz")))
-            with gzip.open(os.path.join(d, "annotations.19.annot.gz"), 'rb') as f:
-                self.assertEqual(hashlib.md5(f.read()).hexdigest(), "8d2ec2765976d7271aef8e6b8763ef5b")
+            with gzip.open(os.path.join(d, "annotations.19.annot.gz"), 'rt') as f:
+                f.readline()
+                self.assertEqual(hashlib.md5(
+                    f.read().replace("\t%s" % os.path.join(d, "annotations.19.annot.gz"), "").encode("utf-8")
+                ).hexdigest(), "c944e7ab5966c5f2667fb0c880ac4849"
+            )
