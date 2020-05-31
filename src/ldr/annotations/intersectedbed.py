@@ -7,7 +7,7 @@ class IntersectedBED:
 
     @staticmethod
     def intersectRegions(snps, regions, bed):
-        if os.system("bedtools intersect -a {snps} -b {regions} -wa | sort | uniq > {bed}".format(
+        if os.system("bedtools intersect -a \"{snps}\" -b \"{regions}\" -wa | sort | uniq > {bed}".format(
             snps = snps, regions = regions, bed = bed
         )) != 0:
             raise ChildProcessError("failed to intersect {snps} with {regions}; check that they are valid BED files".format(

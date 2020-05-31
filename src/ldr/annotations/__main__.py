@@ -25,6 +25,7 @@ def parseArgs():
     parser.add_argument("--plink-prefix", type = str, help = "PLINK file name prefix; defaults to 1000 genomes", default = "1000G.EUR.QC")
     parser.add_argument("--plink-tar-prefix", type = str, help = "PLINK TAR root directory; defaults to none", default = ".")
     parser.add_argument("--snp-list", type = str, help = "path to list of SNPs to use in formatting summary statistics; defaults to HapMap3", default = None)
+    parser.add_argument("--j", type = int, help = "number of cores", default = 1)
     return parser.parse_args()
 
 def main():
@@ -53,7 +54,7 @@ def main():
     try:
         annotations = BinaryAnnotations.fromTemplate(
             Annotations(template, args.template_prefix, chromosomes),
-            args.output_directory, *args.files, prefix = args.file_output_prefix, chromosomes = chromosomes
+            args.output_directory, *args.files, prefix = args.file_output_prefix, chromosomes = chromosomes, j = args.j
         )
         with (HapMap3SNPs.fromBroad(withoutHeader = True) if snps is None else HapMap3SNPs(snps, withoutHeader = True)) as snplist:
             LDScores.fromExistingAnnotations(

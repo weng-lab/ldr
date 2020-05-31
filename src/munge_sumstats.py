@@ -1,0 +1,1 @@
+/home/pratth/git/bulik/ldsc/munge_sumstats.py
