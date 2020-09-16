@@ -33,7 +33,6 @@ class TestUtilities(unittest.TestCase):
                 chromosomes = [ "1", "19" ], prefix = "annotations",
             )
             self.assertTrue(os.path.exists(os.path.join(d, "annotations.1.annot.gz")))
-            os.system("cp %s %s" % (os.path.join(d, "annotations.19.annot.gz"), "/test"))
             with gzip.open(os.path.join(d, "annotations.1.annot.gz"), 'rt') as f:
                 f.readline()
                 self.assertEqual(hashlib.md5(
@@ -46,4 +45,27 @@ class TestUtilities(unittest.TestCase):
                 self.assertEqual(hashlib.md5(
                     f.read().replace("\t%s" % os.path.join(d, "annotations.19.annot.gz"), "").encode("utf-8")
                 ).hexdigest(), "c944e7ab5966c5f2667fb0c880ac4849"
+            )
+
+    def test_binary_annotations_extended(self):
+        with tempfile.TemporaryDirectory() as d:
+            BinaryAnnotations.fromTemplate(
+                Annotations(os.path.join(os.path.dirname(__file__), "resources", "ld"), "baseline", [ "1", "19" ]),
+                d, os.path.join(os.path.dirname(__file__), "resources", "test2.bed"),
+                chromosomes = [ "1", "19" ], prefix = "annotations", extend = True
+            )
+            self.assertTrue(os.path.exists(os.path.join(d, "annotations.1.annot.gz")))
+            os.system("cp %s %s" % (os.path.join(d, "annotations.19.annot.gz"), "/test"))
+            with gzip.open(os.path.join(d, "annotations.1.annot.gz"), 'rt') as f:
+                f.readline()
+                self.assertEqual(hashlib.md5(
+                    f.read().replace("\t%s" % os.path.join(d, "annotations.1.annot.gz"), "").encode("utf-8")
+                ).hexdigest(), "ea5120b37cd4a0019f5379178ccea975"
+            )
+            self.assertTrue(os.path.exists(os.path.join(d, "annotations.19.annot.gz")))
+            with gzip.open(os.path.join(d, "annotations.19.annot.gz"), 'rt') as f:
+                f.readline()
+                self.assertEqual(hashlib.md5(
+                    f.read().replace("\t%s" % os.path.join(d, "annotations.19.annot.gz"), "").encode("utf-8")
+                ).hexdigest(), "31b92359be3778fdeff380cabc9b5e3d"
             )

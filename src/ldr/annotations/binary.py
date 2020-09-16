@@ -22,7 +22,7 @@ def annotationVector(snpbedp, regions):
 class BinaryAnnotations(Annotations):
 
     @classmethod
-    def fromTemplate(cls, template, directory, *files, prefix = "annotations", chromosomes = HUMAN_SOMATIC_CHROMOSOMES, j = 1):
+    def fromTemplate(cls, template, directory, *files, prefix = "annotations", chromosomes = HUMAN_SOMATIC_CHROMOSOMES, j = 1, extend = False):
         if type(template) is not Annotations:
             raise ValueError("BinaryAnnotations template must be of type Annotations; got %s" % type(template))
         for chromosome in chromosomes:
@@ -31,10 +31,18 @@ class BinaryAnnotations(Annotations):
             with AnnotationsBed(template[chromosome]) as wbed:
                 annotationMatrix = Parallel(n_jobs = j)(delayed(annotationVector)(wbed.name, x) for x in files)
             with gzip.open(os.path.join(directory, "%s.%s%s" % (prefix, chromosome, Annotations.SUFFIX)), 'wt') as o:
-                o.write("CHR\tBP\tSNP\tCM\tbase\t" + '\t'.join([ x.replace(' ', '_') for x in files ]) + '\n' + '\n'.join([
-                    snps[i] + '\t' + '\t'.join([ str(annotationMatrix[j][i]) for j in range(len(files)) ])
-                    for i, x in enumerate(annotationMatrix[0])
-                ]) + '\n')
+                if not extend:
+                    o.write("CHR\tBP\tSNP\tCM\tbase\t" + '\t'.join([ x.replace(' ', '_') for x in files ]) + '\n' + '\n'.join([
+                        snps[i] + '\t' + '\t'.join([ str(annotationMatrix[j][i]) for j in range(len(files)) ])
+                        for i, x in enumerate(annotationMatrix[0])
+                    ]) + '\n')
+                else:
+                    snpmap = { x: i for i, x in enumerate(snps) }
+                    with (gzip.open if template[chromosome].endswith(".gz") else open)(template[chromosome], 'rt') as f:
+                        o.write(f.readline().strip() + '\t'.join([ x.replace(' ', '_') for x in files ]) + '\n')
+                        for line in f:
+                            i = snpmap['\t'.join(line.strip().split('\t')[:5])]
+                            o.write(line.strip() + '\t'.join([ str(annotationMatrix[j][i]) for j in range(len(files)) ]) + '\n')
         return cls(directory, prefix, chromosomes)
 
     def __init__(self, directory, prefix = "annotations", chromosomes = HUMAN_SOMATIC_CHROMOSOMES):
