@@ -60,12 +60,12 @@ class TestUtilities(unittest.TestCase):
                 f.readline()
                 self.assertEqual(hashlib.md5(
                     f.read().replace("\t%s" % os.path.join(d, "annotations.1.annot.gz"), "").encode("utf-8")
-                ).hexdigest(), "ea5120b37cd4a0019f5379178ccea975"
+                ).hexdigest(), "e98feb46a7134e93806d9ff0b3132d2d"
             )
             self.assertTrue(os.path.exists(os.path.join(d, "annotations.19.annot.gz")))
             with gzip.open(os.path.join(d, "annotations.19.annot.gz"), 'rt') as f:
                 f.readline()
                 self.assertEqual(hashlib.md5(
                     f.read().replace("\t%s" % os.path.join(d, "annotations.19.annot.gz"), "").encode("utf-8")
-                ).hexdigest(), "31b92359be3778fdeff380cabc9b5e3d"
+                ).hexdigest(), "7282d5678a5bd90bfd3b0dfa4f6316a6"
             )

@@ -39,10 +39,10 @@ class BinaryAnnotations(Annotations):
                 else:
                     snpmap = { x: i for i, x in enumerate(snps) }
                     with (gzip.open if template[chromosome].endswith(".gz") else open)(template[chromosome], 'rt') as f:
-                        o.write(f.readline().strip() + '\t'.join([ x.replace(' ', '_') for x in files ]) + '\n')
+                        o.write(f.readline().strip() + '\t' + '\t'.join([ x.replace(' ', '_') for x in files ]) + '\n')
                         for line in f:
                             i = snpmap['\t'.join(line.strip().split('\t')[:5])]
-                            o.write(line.strip() + '\t'.join([ str(annotationMatrix[j][i]) for j in range(len(files)) ]) + '\n')
+                            o.write(line.strip() + '\t' + '\t'.join([ str(annotationMatrix[j][i]) for j in range(len(files)) ]) + '\n')
         return cls(directory, prefix, chromosomes)
 
     def __init__(self, directory, prefix = "annotations", chromosomes = HUMAN_SOMATIC_CHROMOSOMES):
