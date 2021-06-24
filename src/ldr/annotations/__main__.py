@@ -60,7 +60,7 @@ def main():
         )
         with (HapMap3SNPs.fromBroad(withoutHeader = True) if snps is None else HapMap3SNPs(snps, withoutHeader = True)) as snplist:
             LDScores.fromExistingAnnotations(
-                annotations.directory, args.file_output_prefix, plink, snplist, chromosomes
+                annotations.directory, args.file_output_prefix, plink, snplist, chromosomes, args.j
             )
     except:
         for _, v in temporaryDirectories.items():

@@ -3,6 +3,7 @@
 import os
 import tempfile
 import subprocess
+from joblib import Parallel, delayed
 
 from ..constants.constants import HUMAN_SOMATIC_CHROMOSOMES, BASELINE_LD_URL
 from ..utilities.utilities import untar
@@ -32,12 +33,11 @@ class LDScores:
                     raise FileNotFoundError("incomplete LD scores: missing %s" % path)            
 
     @classmethod
-    def fromExistingAnnotations(cls, directory, prefix, plink, snplist, chromosomes = HUMAN_SOMATIC_CHROMOSOMES):
-        for chromosome in chromosomes:
-            LDScores.computeLD(
-                os.path.join(directory, prefix + ".%s.annot.gz" % chromosome),
-                plink, snplist, chromosome
-            )
+    def fromExistingAnnotations(cls, directory, prefix, plink, snplist, chromosomes = HUMAN_SOMATIC_CHROMOSOMES, j = 1):
+        Parallel(n_jobs = j)(delayed(LDScores.computeLD)(
+            os.path.join(directory, prefix + ".%s.annot.gz" % chromosome),
+            plink, snplist, chromosome
+        ) for chromosome in chromosomes)
         return cls(directory, chromosomes, prefix)
 
     @classmethod
