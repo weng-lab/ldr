@@ -49,14 +49,14 @@ class LDScores:
     @classmethod
     def fromBaselineModel(cls, directory):
         try:
-            cls.validateDirectory(os.path.join(directory, "baseline_v1.1"), prefix = "baseline")
+            cls.validateDirectory(os.path.join(directory, "baseline_v2.2"), prefix = "baseline")
         except FileNotFoundError:
             with tempfile.NamedTemporaryFile(suffix = ".tar.gz") as tar:
                 if os.system("wget {url} -O {tar}".format(url = BASELINE_LD_URL, tar = tar.name)) != 0:
                     raise ChildProcessError("failed to save %s to %s; check your network connetion and try again" % (BASELINE_LD_URL, tar))
                 if untar(tar.name, directory) != 0:
                     raise ChildProcessError("failed to extract %s; check that it is an existing, valid TAR archive" % tar.name)
-        return cls(os.path.join(directory, "baseline_v1.1"))
+        return cls(os.path.join(directory, "baseline_v2.2"))
 
     def __init__(self, directory, chromosomes = HUMAN_SOMATIC_CHROMOSOMES, prefix = "baseline"):
         LDScores.validateDirectory(directory, chromosomes, prefix)
