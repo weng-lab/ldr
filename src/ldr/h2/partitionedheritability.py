@@ -11,7 +11,7 @@ from ..model.weights import Weights
 class PartitionedHeritability:
 
     @staticmethod
-    def partitionHeritability(summaryStatistics, ld, weights, frequencies, output):
+    def partitionHeritability(summaryStatistics, ld, weights, frequencies, output, print_coefficients = False):
         command = """
             ldsc.py \
                 --h2 {summaryStatistics} \
@@ -19,29 +19,32 @@ class PartitionedHeritability:
                 --w-ld-chr {weights} \
                 --frqfile-chr {frequencies} \
                 --overlap-annot \
-                --out {output}
+                --out {output} {print_coefficients}
         """.format(
             summaryStatistics = summaryStatistics,
             ld = ld.fileNamePrefix(),
             weights = weights.fileNamePrefix(),
             frequencies = frequencies.fileNamePrefix(),
-            output = output
+            output = output,
+            print_coefficients = "--print-coefficients" if print_coefficients else ""
         )
         if os.system(command) != 0:
             raise ChildProcessError("failed to perform heritability partitioning with command %s" % command)
 
-    def __init__(self, summaryStatistics, ld, weights, frequencies, prefix = "h2"):
+    def __init__(self, summaryStatistics, ld, weights, frequencies, prefix = "h2", print_coefficients = False):
         self.summaryStatistics = summaryStatistics
         self.ld = ld
         self.weights = weights
         self.frequencies = frequencies
         self.prefix = prefix
+        self.print_coefficients = print_coefficients
 
     def __enter__(self):
         self.directory = tempfile.TemporaryDirectory()
         PartitionedHeritability.partitionHeritability(
             self.summaryStatistics, self.ld, self.weights, self.frequencies,
-            os.path.join(self.directory.name, self.prefix)
+            os.path.join(self.directory.name, self.prefix),
+            self.print_coefficients
         )
         self.file = open(os.path.join(self.directory.name, self.prefix + ".results"), 'rt')
         return self.file

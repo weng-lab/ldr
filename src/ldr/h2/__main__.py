@@ -28,6 +28,7 @@ def parseArgs():
     parser.add_argument("--frequencies-tar-prefix", type = str, help = "allele frequencies TAR root directory; defaults to .", default = ".")
     parser.add_argument("--summary-statistics", type = str, help = "path to summary statistics", required = True)
     parser.add_argument("--snp-list", type = str, help = "path to list of SNPs to use in formatting summary statistics; defaults to HapMap3", default = None)
+    parser.add_argument("--print-coefficients", action = "store_true", help = "when categories are overlapping, print coefficients as well as heritabilities", default = False)
     return parser.parse_args()
 
 def main():
@@ -61,7 +62,7 @@ def main():
 
     with (HapMap3SNPs.fromBroad() if snps is None else HapMap3SNPs(snps)) as snplist:
         with FormattedSummaryStatistics(args.summary_statistics, snplist) as f:
-            with PartitionedHeritability(f, ld, weights, frequencies) as p:
+            with PartitionedHeritability(f, ld, weights, frequencies, print_coefficients = args.print_coefficients) as p:
                 print(p.read())
 
     for _, v in temporaryDirectories.items():
