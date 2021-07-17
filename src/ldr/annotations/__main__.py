@@ -5,7 +5,7 @@ import os
 import argparse
 import tempfile
 
-from .binary import BinaryAnnotations
+from .binary import BinaryAnnotations, ContinuousAnnotations
 from .annotations import Annotations
 from ..constants.constants import HUMAN_SOMATIC_CHROMOSOMES
 from ..model.ld import LDScores
@@ -26,6 +26,7 @@ def parseArgs():
     parser.add_argument("--plink-tar-prefix", type = str, help = "PLINK TAR root directory; defaults to none", default = ".")
     parser.add_argument("--snp-list", type = str, help = "path to list of SNPs to use in formatting summary statistics; defaults to HapMap3", default = None)
     parser.add_argument("--extend-annotations", action = "store_true", default = False, help = "if set, extends the given existing set of annotations")
+    parser.add_argument("--continuous-annotations", action = "store_true", default = False, help = "if set, uses continuous annotation scores")
     parser.add_argument("--j", type = int, help = "number of cores", default = 1)
     return parser.parse_args()
 
@@ -53,7 +54,7 @@ def main():
     )
 
     try:
-        annotations = BinaryAnnotations.fromTemplate(
+        annotations = (BinaryAnnotations if not args.continuous_annotations else ContinuousAnnotations).fromTemplate(
             Annotations(template, args.template_prefix, chromosomes),
             args.output_directory, *args.files, prefix = args.file_output_prefix, chromosomes = chromosomes, j = args.j,
             extend = args.extend_annotations
