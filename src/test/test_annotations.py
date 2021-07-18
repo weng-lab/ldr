@@ -57,9 +57,10 @@ class TestUtilities(unittest.TestCase):
             )
             self.assertTrue(os.path.exists(os.path.join(d, "annotations.1.annot.gz")))
             with gzip.open(os.path.join(d, "annotations.1.annot.gz"), 'rt') as f:
+                f.readline()
                 self.assertEqual(hashlib.md5(
                     f.read().replace("\t%s" % os.path.join(d, "annotations.1.annot.gz"), "").encode("utf-8")
-                ).hexdigest(), "9e93b851765cb2c77127686b758fe44b"
+                ).hexdigest(), "9dff1e1d03457b80a586c96ef8c6a056"
             )
 
     def test_binary_annotations_extended(self):
@@ -70,7 +71,6 @@ class TestUtilities(unittest.TestCase):
                 chromosomes = [ "1", "19" ], prefix = "annotations", extend = True
             )
             self.assertTrue(os.path.exists(os.path.join(d, "annotations.1.annot.gz")))
-            os.system("cp %s %s" % (os.path.join(d, "annotations.19.annot.gz"), "/test"))
             with gzip.open(os.path.join(d, "annotations.1.annot.gz"), 'rt') as f:
                 f.readline()
                 self.assertEqual(hashlib.md5(
