@@ -15,13 +15,17 @@ class FormattedSummaryStatistics:
         if os.system(command) != 0:
             raise ChildProcessError("failed to format summary statistics with command %s" % command)
 
-    def __init__(self, raw, snps):
+    def __init__(self, raw, snps, skip = False):
         self.raw = raw
         self.snps = snps
+        self.skip = skip
     
     def __enter__(self):
         self.tempfile = tempfile.NamedTemporaryFile(suffix = ".sumstats.gz")
-        FormattedSummaryStatistics.formatSummaryStatistics(self.raw, self.snps, self.tempfile.name[:-12])
+        if not self.skip:
+            FormattedSummaryStatistics.formatSummaryStatistics(self.raw, self.snps, self.tempfile.name[:-12])
+        else:
+            os.system("cp %s %s" % (self.raw, self.tempfile.name))
         return self.tempfile.name
     
     def __exit__(self, *args):
