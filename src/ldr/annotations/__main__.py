@@ -48,9 +48,9 @@ def main():
         template = os.path.dirname(ld.fileNamePrefix())
     
     plink = Plink.fromTar(
-        args.plink, temporaryDirectories["plink"].name, args.chromosomes, args.plink_tar_prefix, args.plink_prefix
+        args.plink, temporaryDirectories["plink"].name, chromosomes, args.plink_tar_prefix, args.plink_prefix
     ) if args.plink is not None and not os.path.isdir(args.plink) else (
-        Plink(args.plink, args.chromosomes, args.plink_prefix) if args.plink is not None else Plink.fromBaselineModel(temporaryDirectories["plink"].name)
+        Plink(args.plink, chromosomes, args.plink_prefix) if args.plink is not None else Plink.fromBaselineModel(temporaryDirectories["plink"].name)
     )
 
     try:
