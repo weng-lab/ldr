@@ -42,7 +42,13 @@ class LDScores:
 
     @classmethod
     def fromTar(cls, path, directory, chromosomes = HUMAN_SOMATIC_CHROMOSOMES, tarPrefix = '.', prefix = "baseline"):
-        if untar(path, directory) != 0:
+        if path.startswith("http://") or path.startswith("https://"):
+            with tempfile.NamedTemporaryFile() as f:
+                if os.system("wget {url} -O {tar}".format(url = path, tar = f.name)) != 0:
+                    raise ChildProcessError("failed to save %s to %s; check your network connetion and try again" % (BASELINE_LD_URL, tar))
+                if untar(f.name, directory) != 0:
+                    raise ChildProcessError("failed to extract %s; check that it is an existing, valid TAR archive" % path)
+        elif untar(path, directory) != 0:
             raise ChildProcessError("failed to extract %s; check that it is an existing, valid TAR archive" % path)
         return cls(os.path.join(directory, prefix), chromosomes, prefix)
     
