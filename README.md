@@ -4,11 +4,7 @@ This repository provides a Dockerized version of `ldsc`, a tool for performing L
 
 ## Running
 
-We encourage running this software as a Docker image, which is publicly available through GitHub packages. To pull the image, first [install Docker](https://docs.docker.com/engine/install/), then login to GitHub packages:
-```
-cat github.token.txt | docker login docker.pkg.github.com -u your-github-username --password-stdin
-```
-where `github.token.txt` contains an access token with access to GitHub packages generated [here](https://github.com/settings/tokens). Once you have logged in, run:
+We encourage running this software as a Docker image, which is publicly available through GitHub packages. To pull the image, first [install Docker](https://docs.docker.com/engine/install/), then run:
 ```
 docker pull docker.pkg.github.com/weng-lab/ldr/ldr:latest
 ```
@@ -18,7 +14,7 @@ To perform custom partitioned heritability analysis, SNPs must first be annotate
 docker run \
     --volume /path/to/inputs:/input \
     --volume /path/to/annotations:/output \
-    docker.pkg.github.com/weng-lab/ldr/ldr:latest \
+    ghcr.io/weng-lab/ldr/ldr:latest \
     python3 -m ldr.annotations \
         --files /input/annotations1.bed /input/annotations2.bed ... \
         --file-output-prefix annotations \
@@ -29,15 +25,14 @@ By default, this will use the HapMap3 SNPs provided in the baseline model descri
 ```
 docker run \
     --volume /path/to/annotations:/input \
-    --volume /path/to/output:/output \
-    docker.pkg.github.com/weng-lab/ldr/ldr:latest \
+    ghcr.io/weng-lab/ldr/ldr:latest \
     python3 -m ldr.h2 \
         --ld-scores /input \
         --ld-prefix annotations \
-        --summary-statistics summary-stats.txt > /output/partitioned-heritability.txt
+        --summary-statistics summary-stats.txt > partitioned-heritability.txt
 ```
 
-This will perform partitioned heritability computations on the summary statistics in `summary-stats.txt` given the annotations computed above, and will write results to `/path/to/output/partitioned-heritability.txt` outside the Docker image. The summary statistics must be in the format described in the [partitioned heritability tutorial](https://github.com/bulik/ldsc/wiki/Partitioned-Heritability).
+This will perform partitioned heritability computations on the summary statistics in `summary-stats.txt` given the annotations computed above, and will write results to `partitioned-heritability.txt` outside the Docker image. The summary statistics must be in the format described in the [partitioned heritability tutorial](https://github.com/bulik/ldsc/wiki/Partitioned-Heritability).
 ## For developers
 Contributions to the code are welcome via pull request. First clone this repo:
 ```
