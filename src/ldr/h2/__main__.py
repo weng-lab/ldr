@@ -45,7 +45,7 @@ def main():
 
     ld = LDScores.fromBaselineModel(temporaryDirectories["ld"].name) if args.ld_scores is None else (
         LDScores.fromTar(
-            args.ld_sccores, temporaryDirectories["ld"].name, chromosomes, args.ld_tar_prefix, args.ld_prefix
+            args.ld_scores, temporaryDirectories["ld"].name, chromosomes, args.ld_tar_prefix, args.ld_prefix
         ) if not os.path.isdir(args.ld_scores) else LDScores(args.ld_scores, chromosomes, args.ld_prefix)
     )
 
