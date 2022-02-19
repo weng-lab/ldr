@@ -16,7 +16,7 @@ from ..model.hapmap3 import HapMap3SNPs
 def parseArgs():
     parser = argparse.ArgumentParser("generate custom annotations for partitioned heritability calculations")
     parser.add_argument("--template", type = str, help = "path to template annotations; defaults to Broad baseline model", default = None)
-    parser.add_argument("--template-prefix", type = str, help = "prefix of template annotation files; defaults to 'baseline'", default = "baseline")
+    parser.add_argument("--template-prefix", type = str, help = "prefix of template annotation files; defaults to 'baselineLD'", default = "baselineLD")
     parser.add_argument("--output-directory", type = str, help = "path to directory in which to write output", required = True)
     parser.add_argument("--chromosomes", type = str, help = "comma-separated list of chromosomes; defaults to human somatic", default = None)
     parser.add_argument("--file-output-prefix", type = str, help = "prefix to use when writing output; default is 'annotations'", default = "annotations")

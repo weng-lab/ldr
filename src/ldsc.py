@@ -1,1 +1,0 @@
-/home/pratth/git/bulik/ldsc/ldsc.py
