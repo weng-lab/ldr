@@ -44,7 +44,7 @@ def main():
 
     template = args.template
     if template is None:
-        ld = LDScores.fromBaselineModel(temporaryDirectories["ld"].name)
+        ld = LDScores.fromBaselineModel(temporaryDirectories["ld"].name, args.template_prefix)
         template = os.path.dirname(ld.fileNamePrefix())
     
     plink = Plink.fromTar(

@@ -53,9 +53,10 @@ class LDScores:
         return cls(os.path.join(directory, prefix), chromosomes, prefix)
     
     @classmethod
-    def fromBaselineModel(cls, directory):
+    def fromBaselineModel(cls, directory, prefix = None):
+        if prefix is None: prefix = "baselineLD"
         try:
-            cls.validateDirectory(os.path.join(directory, "baseline_v2.2"), prefix = "baseline")
+            cls.validateDirectory(os.path.join(directory, "baseline_v2.2"), prefix = prefix)
         except FileNotFoundError:
             with tempfile.NamedTemporaryFile(suffix = ".tar.gz") as tar:
                 if os.system("wget {url} -O {tar}".format(url = BASELINE_LD_URL, tar = tar.name)) != 0:
