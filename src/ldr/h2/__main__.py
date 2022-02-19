@@ -21,7 +21,7 @@ def parseArgs():
     parser.add_argument("--ld-prefix", type = str, help = "LD score file name prefix; defaults to baseline", default = "baseline")
     parser.add_argument("--ld-tar-prefix", type = str, help = "LD TAR root directory; defaults to .", default = ".")
     parser.add_argument("--weights", type = str, help = "path to regression weights, either directory or TAR; defaults to 1000 Genomes", default = None)
-    parser.add_argument("--weights-prefix", type = str, help = "regression weight file name prefix; defaults to 1000G prefix", default = "1000G_Phase3_weights_hm3_no_MHC")
+    parser.add_argument("--weights-prefix", type = str, help = "regression weight file name prefix; defaults to 1000G prefix", default = "weights")
     parser.add_argument("--weights-tar-prefix", type = str, help = "regression weight TAR root directory; defaults to .", default = ".")
     parser.add_argument("--frequencies", type = str, help = "path to allele frequencies, either directory or TAR; defaults to 1000 Genomes", default = None)
     parser.add_argument("--frequencies-prefix", type = str, help = "allele frequencies file name prefix; defaults to 1000G prefix", default = "1000G_Phase3_frq")
