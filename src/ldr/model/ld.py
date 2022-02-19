@@ -25,7 +25,7 @@ class LDScores:
             raise ChildProcessError("unable to generate LD scores using command %s" % ' '.join(command))
 
     @staticmethod
-    def validateDirectory(directory, chromosomes = HUMAN_SOMATIC_CHROMOSOMES, prefix = "baseline"):
+    def validateDirectory(directory, chromosomes = HUMAN_SOMATIC_CHROMOSOMES, prefix = "baselineLD"):
         for chromosome in chromosomes:
             for suffix in LDScores.SUFFIXES:
                 path = os.path.join(directory, "%s.%s%s" % (prefix, chromosome, suffix))
@@ -41,7 +41,7 @@ class LDScores:
         return cls(directory, chromosomes, prefix)
 
     @classmethod
-    def fromTar(cls, path, directory, chromosomes = HUMAN_SOMATIC_CHROMOSOMES, tarPrefix = '.', prefix = "baseline"):
+    def fromTar(cls, path, directory, chromosomes = HUMAN_SOMATIC_CHROMOSOMES, tarPrefix = '.', prefix = "baselineLD"):
         if path.startswith("http://") or path.startswith("https://"):
             with tempfile.NamedTemporaryFile() as f:
                 if os.system("wget {url} -O {tar}".format(url = path, tar = f.name)) != 0:
@@ -53,8 +53,7 @@ class LDScores:
         return cls(os.path.join(directory, prefix), chromosomes, prefix)
     
     @classmethod
-    def fromBaselineModel(cls, directory, prefix = None):
-        if prefix is None: prefix = "baselineLD"
+    def fromBaselineModel(cls, directory, prefix = "baselineLD"):
         try:
             cls.validateDirectory(os.path.join(directory, "baseline_v2.2"), prefix = prefix)
         except FileNotFoundError:
@@ -65,7 +64,7 @@ class LDScores:
                     raise ChildProcessError("failed to extract %s; check that it is an existing, valid TAR archive" % tar.name)
         return cls(os.path.join(directory, "baseline_v2.2"))
 
-    def __init__(self, directory, chromosomes = HUMAN_SOMATIC_CHROMOSOMES, prefix = "baseline"):
+    def __init__(self, directory, chromosomes = HUMAN_SOMATIC_CHROMOSOMES, prefix = "baselineLD"):
         LDScores.validateDirectory(directory, chromosomes, prefix)
         self.directory = directory
         self.chromosomes = chromosomes
