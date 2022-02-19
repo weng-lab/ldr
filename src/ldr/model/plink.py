@@ -11,7 +11,7 @@ class Plink:
     SUFFIXES = [ ".fam", ".bim", ".bed" ]
 
     @staticmethod
-    def validateDirectory(directory, chromosomes = HUMAN_SOMATIC_CHROMOSOMES, prefix = "1000G.EUR.QC"):
+    def validateDirectory(directory, chromosomes = HUMAN_SOMATIC_CHROMOSOMES, prefix = "1000G.EUR.hg38"):
         for chromosome in chromosomes:
             for suffix in Plink.SUFFIXES:
                 path = os.path.join(directory, "%s.%s%s" % (prefix, chromosome, suffix))
@@ -19,7 +19,7 @@ class Plink:
                     raise FileNotFoundError("incomplete PLINK directory: missing %s" % path)            
     
     @classmethod
-    def fromTar(cls, path, directory, chromosomes = HUMAN_SOMATIC_CHROMOSOMES, tarPrefix = '.', prefix = "1000G.EUR.QC"):
+    def fromTar(cls, path, directory, chromosomes = HUMAN_SOMATIC_CHROMOSOMES, tarPrefix = '.', prefix = "1000G.EUR.hg38"):
         if untar(path, directory) != 0:
             raise ChildProcessError("failed to extract %s; check that it is an existing, valid TAR archive" % path)
         return cls(os.path.join(directory, tarPrefix), chromosomes, prefix)
@@ -27,16 +27,16 @@ class Plink:
     @classmethod
     def fromBaselineModel(cls, directory):
         try:
-            cls.validateDirectory(os.path.join(directory, "1000G_EUR_Phase3_plink"), prefix = "1000G.EUR.QC")
+            cls.validateDirectory(os.path.join(directory, "plink_files"), prefix = "1000G.EUR.hg38")
         except FileNotFoundError:
             with tempfile.NamedTemporaryFile(suffix = ".tar.gz") as tar:
                 if os.system("wget {url} -O {tar}".format(url = PLINK_1000G_URL, tar = tar.name)) != 0:
                     raise ChildProcessError("failed to save %s to %s; check your network connetion and try again" % (PLINK_1000G_URL, tar))
                 if untar(tar.name, directory) != 0:
                     raise ChildProcessError("failed to extract %s; check that it is an existing, valid TAR archive" % tar.name)
-        return cls(os.path.join(directory, "1000G_EUR_Phase3_plink"))
+        return cls(os.path.join(directory, "plink_files"))
 
-    def __init__(self, directory, chromosomes = HUMAN_SOMATIC_CHROMOSOMES, prefix = "1000G.EUR.QC"):
+    def __init__(self, directory, chromosomes = HUMAN_SOMATIC_CHROMOSOMES, prefix = "1000G.EUR.hg38"):
         Plink.validateDirectory(directory, chromosomes, prefix)
         self.directory = directory
         self.chromosomes = chromosomes

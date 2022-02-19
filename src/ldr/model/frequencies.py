@@ -11,14 +11,14 @@ class Frequencies:
     SUFFIX = ".frq"
 
     @staticmethod
-    def validateDirectory(directory, chromosomes = HUMAN_SOMATIC_CHROMOSOMES, prefix = "1000G.EUR.QC"):
+    def validateDirectory(directory, chromosomes = HUMAN_SOMATIC_CHROMOSOMES, prefix = "1000G.EUR.hg38"):
         for chromosome in chromosomes:
             path = os.path.join(directory, "%s.%s%s" % (prefix, chromosome, Frequencies.SUFFIX))
             if not os.path.exists(path):
                 raise FileNotFoundError("incomplete frequencies: missing %s" % path)            
     
     @classmethod
-    def fromTar(cls, path, directory, chromosomes = HUMAN_SOMATIC_CHROMOSOMES, tarPrefix = '.', prefix = "1000G.EUR.QC"):
+    def fromTar(cls, path, directory, chromosomes = HUMAN_SOMATIC_CHROMOSOMES, tarPrefix = '.', prefix = "1000G.EUR.hg38"):
         if untar(path, directory) != 0:
             raise ChildProcessError("failed to extract %s; check that it is an existing, valid TAR archive" % path)
         return cls(os.path.join(directory, prefix), chromosomes, prefix)
@@ -26,7 +26,7 @@ class Frequencies:
     @classmethod
     def fromBaselineFrequencies(cls, directory):
         try:
-            cls.validateDirectory(os.path.join(directory, "1000G_Phase3_frq"), prefix = "1000G.EUR.QC")
+            cls.validateDirectory(os.path.join(directory, "1000G_Phase3_frq"), prefix = "1000G.EUR.hg38")
         except FileNotFoundError:
             with tempfile.NamedTemporaryFile(suffix = ".tar.gz") as tar:
                 if os.system("wget {url} -O {tar}".format(url = BASELINE_FREQUENCIES_URL, tar = tar.name)) != 0:
@@ -35,7 +35,7 @@ class Frequencies:
                     raise ChildProcessError("failed to extract %s; check that it is an existing, valid TAR archive" % tar.name)
         return cls(os.path.join(directory, "1000G_Phase3_frq"))
 
-    def __init__(self, directory, chromosomes = HUMAN_SOMATIC_CHROMOSOMES, prefix = "1000G.EUR.QC"):
+    def __init__(self, directory, chromosomes = HUMAN_SOMATIC_CHROMOSOMES, prefix = "1000G.EUR.hg38"):
         Frequencies.validateDirectory(directory, prefix = prefix)
         self.directory = directory
         self.chromosomes = chromosomes

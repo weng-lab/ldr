@@ -22,7 +22,7 @@ def parseArgs():
     parser.add_argument("--file-output-prefix", type = str, help = "prefix to use when writing output; default is 'annotations'", default = "annotations")
     parser.add_argument("--files", type = str, nargs = '+', help = "paths to BED files to intersect to generate annotations", default = [])
     parser.add_argument("--plink", type = str, help = "path to PLINK, either TAR or directory; defaults to 1000 genomes", default = None)
-    parser.add_argument("--plink-prefix", type = str, help = "PLINK file name prefix; defaults to 1000 genomes", default = "1000G.EUR.QC")
+    parser.add_argument("--plink-prefix", type = str, help = "PLINK file name prefix; defaults to 1000 genomes", default = "1000G.EUR.hg38")
     parser.add_argument("--plink-tar-prefix", type = str, help = "PLINK TAR root directory; defaults to none", default = ".")
     parser.add_argument("--snp-list", type = str, help = "path to list of SNPs to use in formatting summary statistics; defaults to HapMap3", default = None)
     parser.add_argument("--extend-annotations", action = "store_true", default = False, help = "if set, extends the given existing set of annotations")
