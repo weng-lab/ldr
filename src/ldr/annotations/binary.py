@@ -36,6 +36,12 @@ class BEDAnnotations(Annotations):
             raise ValueError("BinaryAnnotations template must be of type Annotations; got %s" % type(template))
         for chromosome in chromosomes:
             print('[' + str(datetime.now()) + "] generating annotations for chromosome %s" % chromosome, file = sys.stderr)
+            if extend and len(files) == 0:
+                if template[chromosome].endswith(".gz"):
+                    os.system("cp %s %s" % (template[chromosome], os.path.join(directory, "%s.%s%s" % (prefix, chromosome, Annotations.SUFFIX))))
+                else:
+                    os.system("cat %s | gzip > %s" % (template[chromosome], os.path.join(directory, "%s.%s%s" % (prefix, chromosome, Annotations.SUFFIX))))
+                continue
             snps = Annotations.readSNPs(template[chromosome])
             with AnnotationsBed(template[chromosome]) as wbed:
                 annotationMatrix = Parallel(n_jobs = j)(delayed(av)(wbed.name, x) for x in files)
