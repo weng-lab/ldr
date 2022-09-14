@@ -41,7 +41,7 @@ class BEDAnnotations(Annotations):
                     os.system("cp %s %s" % (template[chromosome], os.path.join(directory, "%s.%s%s" % (prefix, chromosome, Annotations.SUFFIX))))
                 else:
                     os.system("cat %s | gzip > %s" % (template[chromosome], os.path.join(directory, "%s.%s%s" % (prefix, chromosome, Annotations.SUFFIX))))
-                continue
+                return
             snps = Annotations.readSNPs(template[chromosome])
             with AnnotationsBed(template[chromosome]) as wbed:
                 annotationMatrix = [ av(wbed.name, x) for x in files ]
