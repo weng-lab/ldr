@@ -34,7 +34,7 @@ class BEDAnnotations(Annotations):
     def fromTemplate(cls, template, directory, *files, av = annotationVector, prefix = "annotations", chromosomes = HUMAN_SOMATIC_CHROMOSOMES, j = 1, extend = False):
         if type(template) is not Annotations:
             raise ValueError("BinaryAnnotations template must be of type Annotations; got %s" % type(template))
-        for chromosome in chromosomes:
+        def run(chromosome):
             print('[' + str(datetime.now()) + "] generating annotations for chromosome %s" % chromosome, file = sys.stderr)
             if extend and len(files) == 0:
                 if template[chromosome].endswith(".gz"):
@@ -44,7 +44,7 @@ class BEDAnnotations(Annotations):
                 continue
             snps = Annotations.readSNPs(template[chromosome])
             with AnnotationsBed(template[chromosome]) as wbed:
-                annotationMatrix = Parallel(n_jobs = j)(delayed(av)(wbed.name, x) for x in files)
+                annotationMatrix = [ av(wbed.name, x) for x in files ]
             with gzip.open(os.path.join(directory, "%s.%s%s" % (prefix, chromosome, Annotations.SUFFIX)), 'wt') as o:
                 if not extend:
                     o.write("CHR\tBP\tSNP\tCM\tbase\t" + '\t'.join([ x.replace(' ', '_') for x in files ]) + '\n' + '\n'.join([
@@ -58,6 +58,7 @@ class BEDAnnotations(Annotations):
                         for line in f:
                             i = snpmap['\t'.join(line.strip().split('\t')[:5])]
                             o.write(line.strip() + '\t' + '\t'.join([ str(annotationMatrix[j][i]) for j in range(len(files)) ]) + '\n')
+        Parallel(n_jobs = j)(delayed(run)(x) for x in chromosomes)
         return cls(directory, prefix, chromosomes)
 
     def __init__(self, directory, prefix = "annotations", chromosomes = HUMAN_SOMATIC_CHROMOSOMES):
