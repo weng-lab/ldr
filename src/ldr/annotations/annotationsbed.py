@@ -14,7 +14,7 @@ class AnnotationsBed:
             f.readline()
             for line in f:
                 l = line.strip().split('\t')
-                self.tempfile.write("chr%s\t%d\t%d\t%s\n" % (l[0], int(l[1]), int(l[1]) + 1, l[2]))
+                self.tempfile.write("chr%s\t%d\t%d\t%s\n" % (l[0], int(l[1]) - 1, int(l[1]), l[2]))
         self.tempfile.flush()
         return self.tempfile
     
