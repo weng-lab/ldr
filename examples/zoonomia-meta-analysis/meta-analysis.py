@@ -18,8 +18,11 @@ import matplotlib.font_manager
 def dformat(xxl):
     x = xxl if type(xxl) is str else xxl[0]
     xx = xxl if type(xxl) is str else xxl[0]
-    with open(x, 'rt') as f:
-        if "LD Score Regression (LDSC)" not in f.read(): return
+    try:
+        with open(x, 'rt') as f:
+            if "LD Score Regression (LDSC)" not in f.read(): return
+    except:
+        return
     with open(x, 'rt') as f:
         lines = [ x.strip() for x in f.read().split("\n") ]
     lines = [ x if "/tmp" not in x else os.path.basename(xx).replace(".5", "_5").split('.')[-3] + "\t" + "\t".join(x.strip().split()[1:]) for x in lines ]
@@ -32,7 +35,10 @@ def dformat(xxl):
                 return llines
         r = Parallel(n_jobs = 64)(delayed(v)(xx) for xx in xxl[1:])
         for xx in r: lines += xx
-    lidx = [ i for i, x in enumerate(lines) if x.startswith("Category") ][0]
+    try:
+        lidx = [ i for i, x in enumerate(lines) if x.startswith("Category") ][0]
+    except:
+        return
     with open(os.path.dirname(x) + "/formatted-h2/" + os.path.basename(x).replace("460K.", "460K_").split('.')[0] + ".results", 'w') as o:
         o.write('\n'.join(lines[lidx:]))
     with open(os.path.dirname(x) + "/formatted-h2/" + os.path.basename(x).replace("460K.", "460K_").split('.')[0] + ".log", 'w') as o:
@@ -43,7 +49,8 @@ def run(x, d):
         with open("formatted-h2.R", 'r') as f:
             o.write(f.read() % (x, d, ", ".join([ '"%s"' % os.path.basename(x).split('.')[0] for x in glob.glob(d + "/*.result*") ])))
         o.flush()
-        return subprocess.check_output("Rscript %s" % o.name, shell = True).decode()
+        with open("/dev/null", 'w') as dn:
+            return subprocess.check_output("Rscript %s" % o.name, stderr = dn, shell = True).decode()
 
 def kv(vx):
     r = {}
@@ -87,18 +94,20 @@ def percentages(inputf):
 def main(argc, argv):
 
     if argc < 3:
-        print("usage: meta-analysis.py ldsc-results-directory *.annot.gz", file = sys.stderr
+        print("usage: meta-analysis.py ldsc-results-directory *.annot.gz", file = sys.stderr)
         return 1
 
     os.system("mkdir -p %s" % (argv[1] + "/formatted-h2"))
     for x in glob.glob(argv[1] + "/*"):
         dformat(x)
+    print("running meta analysis for %d traits" % len(glob.glob(argv[1] + "/formatted-h2/*results")), file = sys.stderr)
     values = Parallel(n_jobs = 64)(delayed(trun)(x, argv[1] + "/formatted-h2") for x in range(2, 150))
 
     cmap = { x[0]: x[1] for x in values if x is not None }
     p = percentages(argv[2:])
+    print("partition\tpercent SNPs\tenrichment\terror\tp\ttau\ttau error\ttau p")
     for k, v in cmap.items():
-        print("%s\t%f\t%f\t%f\t%e\t%f\t%f\t%e" % (k, p[k.split("L2")[0]], v["Enr"], v["Enr_se"], v["Enr_P"], v["tau"], v["tau_se"], v["tau_P"]))
+        print("%s\t%f\t%f\t%f\t%e\t%f\t%f\t%e" % (k.replace("L2_0", ""), p[k.split("L2")[0]], v["Enr"], v["Enr_se"], v["Enr_P"], v["tau"], v["tau_se"], v["tau_P"]))
     return 0
 
 if __name__ == "__main__":

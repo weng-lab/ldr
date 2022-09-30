@@ -5,8 +5,8 @@ meta_sldsc <- function (myrow,dir,analysis,mytraits=traits,mysd=""){
   M    = 5961159
   res   = NULL
   for (t in mytraits){
-    data     = read.table(paste(dir,"/",t,".",analysis,".results",sep=""),h=T)[myrow,]
-    log     = read.table(paste(dir,"/",t,".",analysis,".log",sep=""),h=F,fill=T)
+    data     = read.table(paste(dir,"/",t,".",analysis,"results",sep=""),h=T)[myrow,]
+    log     = read.table(paste(dir,"/",t,".",analysis,"log",sep=""),h=F,fill=T)
     h2g     = as.numeric(as.character(log[which(log$V4=="h2:"),5]))
     #
     myenrstat  = (h2g/M)*((data$Prop._h2/data$Prop._SNPs)-(1-data$Prop._h2)/(1-data$Prop._SNPs)) #step 1
@@ -35,4 +35,4 @@ meta_sldsc <- function (myrow,dir,analysis,mytraits=traits,mysd=""){
   out
 }
 
-meta_sldsc(%d, "%s", "baselineLD_mammal", c(%s))
+meta_sldsc(%d, "%s", "", c(%s))
